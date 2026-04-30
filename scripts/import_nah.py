@@ -171,7 +171,8 @@ def import_geojson(file_path, region):
 
 if __name__ == "__main__":
     # Define files to import
-    base_path = "/root/git/geojson/NAH-Stützpunkte/"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    base_path = os.path.join(script_dir, "..", "data", "geojson", "NAH-Stützpunkte")
     
     # Importing Bavaria
     bayern_file = os.path.join(base_path, "NAH-Bayern.geojson")
