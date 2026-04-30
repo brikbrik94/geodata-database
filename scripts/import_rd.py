@@ -7,7 +7,8 @@ from psycopg2.extras import execute_values
 DB_CONFIG = "dbname=emergency_db user=emergency_admin password=emergency_pass host=100.64.0.1"
 
 def import_geojson_file(file_path):
-    print(f"Processing {file_path}...")
+    filename = os.path.basename(file_path)
+    print(f"Processing {filename}...")
     with open(file_path, 'r') as f:
         data = json.load(f)
 
@@ -16,7 +17,15 @@ def import_geojson_file(file_path):
         props = feature['properties']
         geom = feature['geometry']
         
-        osm_id = props.get('id')
+        # Ensure unique osm_id by prefixing with filename if it's a simple numeric ID
+        raw_id = props.get('id') or feature.get('id')
+        if not raw_id:
+            continue
+            
+        osm_id = str(raw_id)
+        if not osm_id.startswith(('node/', 'way/', 'relation/')):
+            osm_id = f"{filename}:{osm_id}"
+        
         name = props.get('name')
         short_name = props.get('short_name') or props.get('brand:short')
         alt_name = props.get('alt_name')
